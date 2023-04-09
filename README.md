@@ -6,6 +6,7 @@ Below is a portfolio for all projects I created during my first year studying Co
  - 1003 - [Introduction to Software engineering](Docs/softwareengineering.md)
  - 1008 - [Fundamentals of Artificial Intelligence](Docs/aifundamentals.md)
  - 1009 - [Programming Paradigms](Docs/programmingparadigms.md)
+ - [Random Projects](Docs/randomprojects.md)
 
 
 
