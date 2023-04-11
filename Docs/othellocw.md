@@ -6,9 +6,9 @@
 package reversi;
 
 import java.awt.BorderLayout;
-import java.awt.Color;
-import java.awt.Dimension;
 import java.awt.GridLayout;
+import java.awt.event.MouseAdapter;
+
 import javax.swing.JButton;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
@@ -71,6 +71,8 @@ public class GUIView implements IView
 		whiteplayerframe.setVisible(true);
 		
 		
+		
+		
 		/*black frame*/
 		blackplayerframe.setLayout(new BorderLayout());
 		blackplayerframe.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
@@ -125,31 +127,42 @@ package reversi;
 
 import java.awt.Color;
 import java.awt.Dimension;
-
+import java.awt.Graphics;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import javax.swing.BorderFactory;
 import javax.swing.JButton;
 
 
 public class mybutton extends JButton{
 
-
-	Color borderColor;
-	Color whiteColor;
-	Color blackColor;
-
+	public boolean isButtonPressed;
 	
-	
-	@SuppressWarnings("deprecation")
 	public mybutton(int x, int y) {
-		this.setLabel(String.valueOf(x) +"-"+ String.valueOf(y));
-		this.setBackground(Color.GREEN);
-		this.setPreferredSize(new Dimension(50,50));	
-		this.setBorder(BorderFactory.createLineBorder(Color.BLACK));
+		setText(String.valueOf(x) +"-"+ String.valueOf(y));
+		setBackground(Color.GREEN);
+		setPreferredSize(new Dimension(50,50));	
+		setBorder(BorderFactory.createLineBorder(Color.BLACK));
+		addActionListener(new ActionListener(){public void actionPerformed(ActionEvent e){isButtonPressed = true; repaint();}});
+	}
+
+
+
+	@Override
+	protected void paintComponent(Graphics g){
+		super.paintComponent(g);
+		if (isButtonPressed) {
+			g.setColor(Color.BLACK);
+			g.drawOval(0, 0, 46, 46);
+			g.setColor(Color.WHITE);
+			g.fillOval(0, 0, 46, 46);
+		}
 	}
 
 
 
 }
+
 ```
 
 ## ReversiController
