@@ -166,3 +166,61 @@ public class mybutton extends JButton{
 ```
 
 ## ReversiController
+
+```
+
+package reversi;
+
+public class ReversiController implements IController
+{
+
+	IModel model;
+	IView view;
+	
+	@Override
+	public void initialise(IModel model, IView view) {
+		
+		this.model = model;
+		this.view = view;
+		
+	}
+
+	@Override
+	public void startup() {
+		int width = model.getBoardWidth();
+		int height = model.getBoardHeight();
+		for ( int x = 0 ; x < width ; x++ )
+			for ( int y = 0 ; y < height ; y++ )
+				model.setBoardContents(x, y, 0);
+		view.refreshView();
+		
+	}
+
+	@Override
+	public void update() {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void squareSelected(int player, int x, int y) {
+		
+		model.setBoardContents(x, y, player);
+		view.refreshView();
+		
+		
+	}
+
+	@Override
+	public void doAutomatedMove(int player) {
+		// TODO Auto-generated method stub
+		
+	}
+	
+
+
+}
+
+
+
+```
