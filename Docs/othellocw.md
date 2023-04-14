@@ -104,7 +104,8 @@ public class GUIView implements IView
 
 	@Override
 	public void refreshView() {
-		// TODO Auto-generated method stub
+		whiteplayerframe.repaint();
+		blackplayerframe.repaint();
 		
 	}
 
