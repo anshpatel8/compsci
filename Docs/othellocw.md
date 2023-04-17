@@ -6,14 +6,14 @@
 package reversi;
 
 import java.awt.BorderLayout;
+import java.awt.Color;
+import java.awt.Graphics;
 import java.awt.GridLayout;
-import java.awt.event.MouseAdapter;
 
 import javax.swing.JButton;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
-
 
 public class GUIView implements IView
 {
@@ -36,8 +36,9 @@ public class GUIView implements IView
 	JLabel blacklabel = new JLabel();
 	JPanel blackgrid = new JPanel(new GridLayout(8,8));
 	JPanel blackbuttons = new JPanel(new GridLayout(2,1));
-
 	
+	squarehandler[][] blackButtons = new squarehandler[8][8];
+	squarehandler[][] whiteButtons = new squarehandler[8][8];
 	
 	@Override
 	public void initialise(IModel model, IController controller) {
@@ -55,8 +56,9 @@ public class GUIView implements IView
 		whiteplayerframe.add(whitegrid, BorderLayout.CENTER);
         for (int x = 0; x <= 7; x++) {
         	for (int y = 0; y <= 7; y++) {
-        		mybutton button = new mybutton(x,y);
-        		whitegrid.add(button);
+        		squarehandler buttonwhite = new squarehandler(x,y, model, controller, 1);
+        		whiteButtons[x][y] = buttonwhite;
+        		whitegrid.add(buttonwhite);
         	}
             
         }
@@ -83,8 +85,9 @@ public class GUIView implements IView
 		blackplayerframe.add(blackgrid, BorderLayout.CENTER);
         for (int x = 7; x >= 0; x--) {
         	for (int y = 7; y >= 0; y--) {
-        		mybutton button2 = new mybutton(x,y);
-        		blackgrid.add(button2);
+        		squarehandler buttonblack = new squarehandler(x,y, model, controller, 2);
+        		blackButtons[x][y] = buttonblack;
+        		blackgrid.add(buttonblack);
         	}
             
         }
@@ -104,24 +107,56 @@ public class GUIView implements IView
 
 	@Override
 	public void refreshView() {
-		whiteplayerframe.repaint();
-		blackplayerframe.repaint();
+		
+		for(int x = 0; x <= 7; x++) {
+			for(int y = 0; y <= 7; y ++) {
+				int check = model.getBoardContents(x, y);
+				if (check == 1) {
+					whiteButtons[x][y].setDrawColor(Color.BLACK);
+					whiteButtons[x][y].setFillColor(Color.WHITE);
+					whiteButtons[x][y].repaint();
+				}
+				else if (check == 2) {
+					whiteButtons[x][y].setDrawColor(Color.WHITE);
+					whiteButtons[x][y].setFillColor(Color.BLACK);
+					whiteButtons[x][y].repaint();
+				}
+				
+			}
+		}
+		
+		for(int x = 7; x >= 0 ; x--) {
+			for(int y = 7; y >= 0; y --) {
+				int check = model.getBoardContents(x, y);
+				if (check == 1) {
+					blackButtons[x][y].setDrawColor(Color.BLACK);
+					blackButtons[x][y].setFillColor(Color.WHITE);
+					blackButtons[x][y].repaint();
+				}
+				else if (check == 2) {
+					blackButtons[x][y].setDrawColor(Color.WHITE);
+					blackButtons[x][y].setFillColor(Color.BLACK);
+					blackButtons[x][y].repaint();
+				}
+				
+			}
+		}
+		
 		
 	}
 
 	@Override
 	public void feedbackToUser(int player, String message) {
-		// TODO Auto-generated method stub
+		
 		
 	}
-	
 	
 }
 
 ```
 
 
-## Mybutton
+## squarehandler
 
 ```
 package reversi;
@@ -132,36 +167,65 @@ import java.awt.Graphics;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import javax.swing.BorderFactory;
+import javax.swing.ButtonModel;
 import javax.swing.JButton;
 
+public class squarehandler extends JButton
+{
 
-public class mybutton extends JButton{
 
-	public boolean isButtonPressed;
+	IModel model;
+	IController controller;
+	int player;
+	Color drawColor;
+	Color fillColor;
 	
-	public mybutton(int x, int y) {
-		setText(String.valueOf(x) +"-"+ String.valueOf(y));
+	public squarehandler(int x, int y, IModel model, IController controller, int player) {
+		
+		this.model = model;
+		this.controller = controller;
+		this.player = player;
+		
+		//setText(String.valueOf(x) +"-"+ String.valueOf(y));
 		setBackground(Color.GREEN);
 		setPreferredSize(new Dimension(50,50));	
 		setBorder(BorderFactory.createLineBorder(Color.BLACK));
-		addActionListener(new ActionListener(){public void actionPerformed(ActionEvent e){isButtonPressed = true; repaint();}});
+		addActionListener(new ActionListener(){
+			public void actionPerformed(ActionEvent e) {
+				
+				controller.squareSelected(player, x, y);
+				
+				
+			}
+		});
 	}
-
-
-
+	
+	public void setDrawColor(Color drawColor)
+	{
+		this.drawColor = drawColor;
+	}
+	
+	public void setFillColor(Color fillColor)
+	{
+		this.fillColor = fillColor;
+	}
+	
 	@Override
 	protected void paintComponent(Graphics g){
 		super.paintComponent(g);
-		if (isButtonPressed) {
-			g.setColor(Color.BLACK);
-			g.drawOval(0, 0, 46, 46);
-			g.setColor(Color.WHITE);
-			g.fillOval(0, 0, 46, 46);
-		}
+
+			if(drawColor != null) {
+				g.setColor(drawColor);
+				g.drawOval(0, 0, 46, 46);
+			}
+			if(fillColor != null) {
+				g.setColor(fillColor);
+				g.fillOval(0, 0, 46, 46);
+			}
+
+		
+
 	}
-
-
-
 }
 
 ```
@@ -172,8 +236,7 @@ public class mybutton extends JButton{
 
 package reversi;
 
-public class ReversiController implements IController
-{
+public class ReversiController implements IController {
 
 	IModel model;
 	IView view;
@@ -183,45 +246,47 @@ public class ReversiController implements IController
 		
 		this.model = model;
 		this.view = view;
-		
 	}
 
 	@Override
 	public void startup() {
+		// Initialise board
 		int width = model.getBoardWidth();
 		int height = model.getBoardHeight();
-		for ( int x = 0 ; x < width ; x++ )
-			for ( int y = 0 ; y < height ; y++ )
+		for ( int x = 0 ; x < width ; x++ ) {
+			for ( int y = 0 ; y < height ; y++ ) {
 				model.setBoardContents(x, y, 0);
-		view.refreshView();
+			}
+		}
+		/* setting initial pieces*/
+		model.setBoardContents(3, 3, 1);
+		model.setBoardContents(4, 4, 1);
+		model.setBoardContents(3, 4, 2);
+		model.setBoardContents(4, 3, 2);
 		
+		/*refresh view*/
+		view.refreshView();
 	}
 
 	@Override
 	public void update() {
-		// TODO Auto-generated method stub
+		
 		
 	}
 
 	@Override
 	public void squareSelected(int player, int x, int y) {
 		
-		model.setBoardContents(x, y, player);
+		model.setBoardContents(x, y, player);		
 		view.refreshView();
-		
-		
 	}
 
 	@Override
 	public void doAutomatedMove(int player) {
-		// TODO Auto-generated method stub
+		
 		
 	}
-	
-
 
 }
-
-
 
 ```
