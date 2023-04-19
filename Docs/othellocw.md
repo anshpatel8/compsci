@@ -148,6 +148,10 @@ public class GUIView implements IView
 	@Override
 	public void feedbackToUser(int player, String message) {
 		
+		if ( player == 1 )
+			whitelabel.setText(message);
+		else if ( player == 2 )
+			blacklabel.setText(message);
 		
 	}
 	
@@ -233,7 +237,6 @@ public class squarehandler extends JButton
 ## ReversiController
 
 ```
-
 package reversi;
 
 public class ReversiController implements IController {
@@ -264,8 +267,16 @@ public class ReversiController implements IController {
 		model.setBoardContents(3, 4, 2);
 		model.setBoardContents(4, 3, 2);
 		
+		
+		/*white should play first, even after a restart*/
+		model.setPlayer(1);
+		view.feedbackToUser(1, "White player - choose where to put your piece");
+		view.feedbackToUser(2, "Black player - not your turn");
+		
 		/*refresh view*/
 		view.refreshView();
+		
+		
 	}
 
 	@Override
@@ -277,7 +288,46 @@ public class ReversiController implements IController {
 	@Override
 	public void squareSelected(int player, int x, int y) {
 		
-		model.setBoardContents(x, y, player);		
+		/*check that the square selected is clicked by the player it should be*/
+		if (player != model.getPlayer()) {
+			if(player == 1) {
+				view.feedbackToUser(1, "It is not your turn!");
+			}
+			else if (player == 2) {
+				view.feedbackToUser(2, "It is not your turn!");
+			}
+		}
+		else if (player == model.getPlayer()) {
+			if(model.getBoardContents(x, y) == 0) {
+				if(this.pieceCounter(x, y, player) != 0) {
+						/*reject current player playing in invalid square */
+						/*if there is no valid location to play then change to other player*/
+						
+						/*if all checks pass then update board*/
+						model.setBoardContents(x, y, player);
+						if (player == 1) {
+							model.setPlayer(2);
+							view.feedbackToUser(2, "Black player - choose where to put your piece");
+							view.feedbackToUser(1, "White player - not your turn");
+						}
+						else if (player == 2) {
+							model.setPlayer(1);
+							view.feedbackToUser(1, "White player - choose where to put your piece");
+							view.feedbackToUser(2, "Black player - not your turn");
+						}
+					}
+			}
+
+		}
+		
+		
+		
+		/*if neither player can move then end the game	*/
+
+		
+		
+		
+				
 		view.refreshView();
 	}
 
@@ -286,7 +336,33 @@ public class ReversiController implements IController {
 		
 		
 	}
+	
+	public int pieceCounter(int x, int y, int player) {
+		
+		int totalcount = 0 ;
+		int xoffset, yoffset, whoOwnsSquare;
+		
+		
+		
+		for (xoffset=-1; xoffset<=1; xoffset++) {
+			for (yoffset=-1; yoffset<=1; yoffset++) {
+				if((x+xoffset > 0) && (x+xoffset < 8) && (y+yoffset > 0) && (y+yoffset < 8)) {
+					whoOwnsSquare = model.getBoardContents(x+xoffset, y+yoffset);
+					if ((whoOwnsSquare > 0) && (whoOwnsSquare != player)) {
+						
+						/* need to make other function to continue going in that offset and return its own count*/
+						
+						
+					}
+
+				}
+			}
+		}
+		
+		return totalcount;
+	}
 
 }
+
 
 ```
