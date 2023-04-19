@@ -51,7 +51,7 @@ public class GUIView implements IView
 		whiteplayerframe.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		whiteplayerframe.setTitle("White Player");
 		whiteplayerframe.setLocationRelativeTo(null);
-		whitelabel.setText("white player");
+		whitelabel.setText("White Player");
 		whiteplayerframe.add(whitelabel, BorderLayout.NORTH);
 		whiteplayerframe.add(whitegrid, BorderLayout.CENTER);
         for (int x = 0; x <= 7; x++) {
@@ -80,7 +80,7 @@ public class GUIView implements IView
 		blackplayerframe.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		blackplayerframe.setTitle("Black Player");
 		blackplayerframe.setLocationRelativeTo(null);
-		blacklabel.setText("black player");
+		blacklabel.setText("Black Player");
 		blackplayerframe.add(blacklabel, BorderLayout.NORTH);
 		blackplayerframe.add(blackgrid, BorderLayout.CENTER);
         for (int x = 7; x >= 0; x--) {
