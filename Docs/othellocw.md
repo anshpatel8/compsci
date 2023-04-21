@@ -9,6 +9,8 @@ import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Graphics;
 import java.awt.GridLayout;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 
 import javax.swing.JButton;
 import javax.swing.JFrame;
@@ -67,6 +69,8 @@ public class GUIView implements IView
         JButton Restart = new JButton();
         greedyai.setText("Greedy AI (Play white)");
         Restart.setText("Restart");
+        Restart.addActionListener(new ActionListener()
+        	{ public void actionPerformed(ActionEvent e) { controller.startup(); } } );
         whitebuttons.add(greedyai);
         whitebuttons.add(Restart);
 		whiteplayerframe.pack();
@@ -93,11 +97,9 @@ public class GUIView implements IView
         }
         blackplayerframe.add(blackbuttons, BorderLayout.SOUTH);
         JButton greedyai2 = new JButton();
-        JButton Restart2 = new JButton();
         greedyai2.setText("Greedy AI (Play black)");
-        Restart2.setText("Restart");
         blackbuttons.add(greedyai2);
-        blackbuttons.add(Restart2);
+        blackbuttons.add(Restart);
 		
 		
 		blackplayerframe.pack();
@@ -121,6 +123,11 @@ public class GUIView implements IView
 					whiteButtons[x][y].setFillColor(Color.BLACK);
 					whiteButtons[x][y].repaint();
 				}
+				else if (check == 0) {
+					whiteButtons[x][y].setDrawColor(Color.GREEN);
+					whiteButtons[x][y].setFillColor(Color.GREEN);
+					whiteButtons[x][y].repaint();
+				}
 				
 			}
 		}
@@ -136,6 +143,11 @@ public class GUIView implements IView
 				else if (check == 2) {
 					blackButtons[x][y].setDrawColor(Color.WHITE);
 					blackButtons[x][y].setFillColor(Color.BLACK);
+					blackButtons[x][y].repaint();
+				}
+				else if (check == 0) {
+					blackButtons[x][y].setDrawColor(Color.GREEN);
+					blackButtons[x][y].setFillColor(Color.GREEN);
 					blackButtons[x][y].repaint();
 				}
 				
@@ -190,7 +202,7 @@ public class squarehandler extends JButton
 		this.controller = controller;
 		this.player = player;
 		
-		//setText(String.valueOf(x) +"-"+ String.valueOf(y));
+		//setText(String.valueOf(x) +"x-y"+ String.valueOf(y));
 		setBackground(Color.GREEN);
 		setPreferredSize(new Dimension(50,50));	
 		setBorder(BorderFactory.createLineBorder(Color.BLACK));
@@ -254,6 +266,7 @@ public class ReversiController implements IController {
 	@Override
 	public void startup() {
 		// Initialise board
+		model.clear(0);
 		int width = model.getBoardWidth();
 		int height = model.getBoardHeight();
 		for ( int x = 0 ; x < width ; x++ ) {
@@ -300,7 +313,7 @@ public class ReversiController implements IController {
 		else if (player == model.getPlayer()) {
 			if(model.getBoardContents(x, y) == 0) {
 				if(this.pieceCounter(x, y, player) != 0) {
-						/*reject current player playing in invalid square */
+						
 						/*if there is no valid location to play then change to other player*/
 						
 						/*if all checks pass then update board*/
@@ -350,8 +363,8 @@ public class ReversiController implements IController {
 					whoOwnsSquare = model.getBoardContents(x+xoffset, y+yoffset);
 					if ((whoOwnsSquare > 0) && (whoOwnsSquare != player)) {
 						
-						/* need to make other function to continue going in that offset and return its own count*/
-						
+						/* function to carry on going in offset direction*/
+						totalcount += carryOn(xoffset, yoffset, x+xoffset, y+yoffset, player);
 						
 					}
 
@@ -361,8 +374,60 @@ public class ReversiController implements IController {
 		
 		return totalcount;
 	}
+	
+	
+	public int carryOn (int xoffset, int yoffset, int x, int y, int player) {
+		
+		int count = 0, otherPlayer = 0, currentx = x, currenty = y, noToCapture = 0;
+		boolean canPlay = false;
+		
+		if (player == 1){
+			otherPlayer = 2;
+		}
+		else if (player == 2){
+			otherPlayer = 1;
+		}
+		
+		
+		while(model.getBoardContents(currentx, currenty) == otherPlayer) {
+
+			count++;
+			currentx = currentx + xoffset;
+			currenty = currenty + yoffset;
+			if((currentx < 0) || (currentx > 8) || (currenty < 0) || (currenty > 8)) {
+				break;
+			}
+			if(model.getBoardContents(currentx, currenty) == player) {
+				canPlay = true;
+				break;
+			}
+	
+		}
+	
+		if (canPlay) {
+			noToCapture = count+1;
+			currentx = x;
+			currenty = y;
+			while (noToCapture > 0) {
+				
+
+				model.setBoardContents(currentx, currenty, player);
+				currentx += xoffset;
+				currenty += yoffset;
+				
+				
+				
+				noToCapture--;
+			}
+			
+			return count;
+		}
+		
+
+		return 0;
+		
+	}
 
 }
-
 
 ```
