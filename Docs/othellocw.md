@@ -436,8 +436,7 @@ public class ReversiController implements IController {
 				}
 			}
 		}
-		model.setBoardContents(autox, autoy, player);
-		this.pieceCounter(autox, autoy, player, 1);
+		this.squareSelected(player, autox, autoy);
 		view.refreshView();
 		
 	}
