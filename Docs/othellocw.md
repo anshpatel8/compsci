@@ -71,6 +71,8 @@ public class GUIView implements IView
         Restart.setText("Restart");
         Restart.addActionListener(new ActionListener()
         	{ public void actionPerformed(ActionEvent e) { controller.startup(); } } );
+        greedyai.addActionListener(new ActionListener()
+    	{ public void actionPerformed(ActionEvent e) { controller.doAutomatedMove(1); } } );
         whitebuttons.add(greedyai);
         whitebuttons.add(Restart);
 		whiteplayerframe.pack();
@@ -97,9 +99,15 @@ public class GUIView implements IView
         }
         blackplayerframe.add(blackbuttons, BorderLayout.SOUTH);
         JButton greedyai2 = new JButton();
+        JButton restart2 = new JButton();
         greedyai2.setText("Greedy AI (Play black)");
         blackbuttons.add(greedyai2);
-        blackbuttons.add(Restart);
+        restart2.setText("Restart");
+        restart2.addActionListener(new ActionListener()
+    	{ public void actionPerformed(ActionEvent e) { controller.startup(); } } );
+        greedyai2.addActionListener(new ActionListener()
+    	{ public void actionPerformed(ActionEvent e) { controller.doAutomatedMove(2); } } );
+        blackbuttons.add(restart2);
 		
 		
 		blackplayerframe.pack();
@@ -168,6 +176,10 @@ public class GUIView implements IView
 	}
 	
 }
+
+
+
+
 
 ```
 
@@ -255,6 +267,7 @@ public class ReversiController implements IController {
 
 	IModel model;
 	IView view;
+	boolean whiteToPlay = false, blackToPlay = false;
 	
 	@Override
 	public void initialise(IModel model, IView view) {
@@ -295,7 +308,9 @@ public class ReversiController implements IController {
 	@Override
 	public void update() {
 		
-		
+
+
+
 	}
 
 	@Override
@@ -312,22 +327,57 @@ public class ReversiController implements IController {
 		}
 		else if (player == model.getPlayer()) {
 			if(model.getBoardContents(x, y) == 0) {
-				if(this.pieceCounter(x, y, player) != 0) {
+				if(this.pieceCounter(x, y, player, 1) != 0) {
 						
-						/*if there is no valid location to play then change to other player*/
+						
 						
 						/*if all checks pass then update board*/
 						model.setBoardContents(x, y, player);
 						if (player == 1) {
-							model.setPlayer(2);
-							view.feedbackToUser(2, "Black player - choose where to put your piece");
-							view.feedbackToUser(1, "White player - not your turn");
+							/*if there is no valid location to play then change to other player*/
+							checkblack:
+					        for (int j = 0; j <= 7; j++) {
+					        	for (int k = 0; k <= 7; k++) {
+					        		if (model.getBoardContents(j, k) == 0) {
+						        		if(this.pieceCounter(j, k, 2, 0) != 0) {
+						        			blackToPlay = true;
+						        			break checkblack;
+						        		}
+					        		}
+
+					        	}
+					        }
+					        if (blackToPlay) {
+			        			model.setPlayer(2);
+			        			view.feedbackToUser(2, "Black player - choose where to put your piece");
+			        			view.feedbackToUser(1, "White player - not your turn");
+					        }
+
 						}
+						
 						else if (player == 2) {
-							model.setPlayer(1);
-							view.feedbackToUser(1, "White player - choose where to put your piece");
-							view.feedbackToUser(2, "Black player - not your turn");
+							/*if there is no valid location to play then change to other player*/
+							checkwhite:
+						        for (int j = 0; j <= 7; j++) {
+						        	for (int k = 0; k <= 7; k++) {
+						        		if (model.getBoardContents(j, k) == 0) {
+							        		if(this.pieceCounter(j, k, 1, 0) != 0) {
+							        			whiteToPlay = true;
+							        			break checkwhite;
+							        		}
+						        		}
+
+						        	}
+						        }
+						        if (whiteToPlay) {
+				        			model.setPlayer(1);
+				        			view.feedbackToUser(1, "White player - choose where to put your piece");
+				        			view.feedbackToUser(2, "Black player - not your turn");
+						        }
+
 						}
+
+						
 					}
 			}
 
@@ -336,7 +386,34 @@ public class ReversiController implements IController {
 		
 		
 		/*if neither player can move then end the game	*/
-
+		if (whiteToPlay == false && blackToPlay == false) {
+			model.setFinished(true);
+			int whiteCount = 0;
+			int blackCount = 0;
+	        for (int j = 0; j <= 7; j++) {
+	        	for (int k = 0; k <= 7; k++) {
+	        		if(model.getBoardContents(j, k) == 1) {
+	        			whiteCount++;
+	        		}
+	        		else if(model.getBoardContents(j, k) == 2) {
+	        			blackCount++;
+	        		}
+	        	}
+	        }
+			if(whiteCount > blackCount) {
+				view.feedbackToUser(1, "White won. White " +whiteCount+ " to Black " +blackCount + ". Reset the game to replay.");
+				view.feedbackToUser(2, "White won. White " +whiteCount+ " to Black " +blackCount + ". Reset the game to replay.");
+			}
+			else if(whiteCount < blackCount) {
+				view.feedbackToUser(1, "Black won. Black " +blackCount+ " to White " +whiteCount + ". Reset the game to replay.");
+				view.feedbackToUser(2, "Black won. Black " +blackCount+ " to White " +whiteCount + ". Reset the game to replay.");
+			}
+			else if(whiteCount == blackCount) {
+				view.feedbackToUser(1, "Draw. Both players ended with " +blackCount +" pieces. Reset the game to replay");
+				view.feedbackToUser(2, "Draw. Both players ended with " +blackCount +" pieces. Reset the game to replay");
+			}
+			
+		}
 		
 		
 		
@@ -346,11 +423,26 @@ public class ReversiController implements IController {
 
 	@Override
 	public void doAutomatedMove(int player) {
-		
+		int maxSeen = 0, result = 0,  autox = 0,  autoy = 0;
+		for(int j = 0; j <= 7; j++ ) {
+			for(int k = 0; k <= 7; k++) {
+				if(model.getBoardContents(j, k) == 0) {
+					result = this.pieceCounter(j, k, player, 0);
+						if(result >= maxSeen) {
+							maxSeen = result;
+							autox = j;
+							autoy = k;
+						}
+				}
+			}
+		}
+		model.setBoardContents(autox, autoy, player);
+		this.pieceCounter(autox, autoy, player, 1);
+		view.refreshView();
 		
 	}
 	
-	public int pieceCounter(int x, int y, int player) {
+	public int pieceCounter(int x, int y, int player, int doPaint) {
 		
 		int totalcount = 0 ;
 		int xoffset, yoffset, whoOwnsSquare;
@@ -364,7 +456,7 @@ public class ReversiController implements IController {
 					if ((whoOwnsSquare > 0) && (whoOwnsSquare != player)) {
 						
 						/* function to carry on going in offset direction*/
-						totalcount += carryOn(xoffset, yoffset, x+xoffset, y+yoffset, player);
+						totalcount += carryOn(xoffset, yoffset, x+xoffset, y+yoffset, player, doPaint);
 						
 					}
 
@@ -376,7 +468,7 @@ public class ReversiController implements IController {
 	}
 	
 	
-	public int carryOn (int xoffset, int yoffset, int x, int y, int player) {
+	public int carryOn (int xoffset, int yoffset, int x, int y, int player, int doPaint) {
 		
 		int count = 0, otherPlayer = 0, currentx = x, currenty = y, noToCapture = 0;
 		boolean canPlay = false;
@@ -404,7 +496,7 @@ public class ReversiController implements IController {
 	
 		}
 	
-		if (canPlay) {
+		if (canPlay && doPaint == 1) {
 			noToCapture = count+1;
 			currentx = x;
 			currenty = y;
@@ -422,6 +514,9 @@ public class ReversiController implements IController {
 			
 			return count;
 		}
+		else if (canPlay && doPaint == 0) {
+			return count;
+		}
 		
 
 		return 0;
@@ -429,5 +524,6 @@ public class ReversiController implements IController {
 	}
 
 }
+
 
 ```
