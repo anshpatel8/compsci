@@ -176,11 +176,6 @@ public class GUIView implements IView
 	}
 	
 }
-
-
-
-
-
 ```
 
 
@@ -220,9 +215,9 @@ public class squarehandler extends JButton
 		setBorder(BorderFactory.createLineBorder(Color.BLACK));
 		addActionListener(new ActionListener(){
 			public void actionPerformed(ActionEvent e) {
-				
-				controller.squareSelected(player, x, y);
-				
+				if(model.hasFinished() == false) {
+					controller.squareSelected(player, x, y);
+				}
 				
 			}
 		});
@@ -255,7 +250,6 @@ public class squarehandler extends JButton
 
 	}
 }
-
 ```
 
 ## ReversiController
@@ -267,7 +261,7 @@ public class ReversiController implements IController {
 
 	IModel model;
 	IView view;
-	boolean whiteToPlay = false, blackToPlay = false;
+	boolean whiteToPlay = true, blackToPlay = false;
 	
 	@Override
 	public void initialise(IModel model, IView view) {
@@ -287,11 +281,13 @@ public class ReversiController implements IController {
 				model.setBoardContents(x, y, 0);
 			}
 		}
+		model.setFinished(false);
 		/* setting initial pieces*/
 		model.setBoardContents(3, 3, 1);
 		model.setBoardContents(4, 4, 1);
 		model.setBoardContents(3, 4, 2);
 		model.setBoardContents(4, 3, 2);
+		
 		
 		
 		/*white should play first, even after a restart*/
@@ -308,86 +304,15 @@ public class ReversiController implements IController {
 	@Override
 	public void update() {
 		
+		/*boolean finished = true;
+		for ( int x1 = 0 ; x1 < model.getBoardWidth() ; x1++ )
+			for ( int y1 = 0 ; y1 < model.getBoardHeight() ; y1++ )
+				if ( model.getBoardContents(x1, y1) == 0 )
+					finished = false; 
+		model.setFinished(finished);*/
 
-
-
-	}
-
-	@Override
-	public void squareSelected(int player, int x, int y) {
 		
-		/*check that the square selected is clicked by the player it should be*/
-		if (player != model.getPlayer()) {
-			if(player == 1) {
-				view.feedbackToUser(1, "It is not your turn!");
-			}
-			else if (player == 2) {
-				view.feedbackToUser(2, "It is not your turn!");
-			}
-		}
-		else if (player == model.getPlayer()) {
-			if(model.getBoardContents(x, y) == 0) {
-				if(this.pieceCounter(x, y, player, 1) != 0) {
-						
-						
-						
-						/*if all checks pass then update board*/
-						model.setBoardContents(x, y, player);
-						if (player == 1) {
-							/*if there is no valid location to play then change to other player*/
-							checkblack:
-					        for (int j = 0; j <= 7; j++) {
-					        	for (int k = 0; k <= 7; k++) {
-					        		if (model.getBoardContents(j, k) == 0) {
-						        		if(this.pieceCounter(j, k, 2, 0) != 0) {
-						        			blackToPlay = true;
-						        			break checkblack;
-						        		}
-					        		}
-
-					        	}
-					        }
-					        if (blackToPlay) {
-			        			model.setPlayer(2);
-			        			view.feedbackToUser(2, "Black player - choose where to put your piece");
-			        			view.feedbackToUser(1, "White player - not your turn");
-					        }
-
-						}
-						
-						else if (player == 2) {
-							/*if there is no valid location to play then change to other player*/
-							checkwhite:
-						        for (int j = 0; j <= 7; j++) {
-						        	for (int k = 0; k <= 7; k++) {
-						        		if (model.getBoardContents(j, k) == 0) {
-							        		if(this.pieceCounter(j, k, 1, 0) != 0) {
-							        			whiteToPlay = true;
-							        			break checkwhite;
-							        		}
-						        		}
-
-						        	}
-						        }
-						        if (whiteToPlay) {
-				        			model.setPlayer(1);
-				        			view.feedbackToUser(1, "White player - choose where to put your piece");
-				        			view.feedbackToUser(2, "Black player - not your turn");
-						        }
-
-						}
-
-						
-					}
-			}
-
-		}
-		
-		
-		
-		/*if neither player can move then end the game	*/
-		if (whiteToPlay == false && blackToPlay == false) {
-			model.setFinished(true);
+		if(model.hasFinished() == true) {
 			int whiteCount = 0;
 			int blackCount = 0;
 	        for (int j = 0; j <= 7; j++) {
@@ -412,20 +337,137 @@ public class ReversiController implements IController {
 				view.feedbackToUser(1, "Draw. Both players ended with " +blackCount +" pieces. Reset the game to replay");
 				view.feedbackToUser(2, "Draw. Both players ended with " +blackCount +" pieces. Reset the game to replay");
 			}
+		}
+		if (model.hasFinished() == false) {
 			
+			
+			
+			if (whiteToPlay == true) {
+    			model.setPlayer(1);
+    			view.feedbackToUser(1, "White player - choose where to put your piece");
+    			view.feedbackToUser(2, "Black player - not your turn");
+    			
+
+	        }
+	        else if (blackToPlay == true) {
+	        	model.setPlayer(2);
+    			view.feedbackToUser(2, "Black player - choose where to put your piece");
+    			view.feedbackToUser(1, "White player - not your turn");
+    			
+ 
+	        }
+	        
+	        
+	        
+		}
+
+
+	}
+
+	@Override
+	public void squareSelected(int player, int x, int y) {
+		
+		/*check that the square selected is clicked by the player it should be*/
+		if (player != model.getPlayer()) {
+			if(player == 1) {
+				view.feedbackToUser(1, "It is not your turn!");
+			}
+			else if (player == 2) {
+				view.feedbackToUser(2, "It is not your turn!");
+			}
+		}
+		else if (player == model.getPlayer()) {
+			if(model.getBoardContents(x, y) == 0) {
+				if(this.pieceCounter(x, y, player, 1) != 0) {
+						
+						
+						
+						/*if all checks pass then update board*/
+						model.setBoardContents(x, y, player);
+						view.refreshView();
+						if (model.getPlayer() == 1) {
+							/*if there is valid location to play then change to other player*/
+							checkblack:
+					        for (int j = 0; j < model.getBoardWidth(); j++) {
+					        	for (int k = 0; k < model.getBoardHeight(); k++) {
+					        		if (model.getBoardContents(j, k) == 0) {
+						        		if(this.pieceCounter(j, k, 2, 0) != 0) {
+						        			blackToPlay = true;
+						        			whiteToPlay = false;
+						        			break checkblack;
+						        		}
+						        		if(this.pieceCounter(j, k, 2, 0) == 0) {
+						        			blackToPlay = false;
+						        			if(this.pieceCounter(j, k, 1, 0) == 0)
+						        				whiteToPlay = false;
+						        		}
+					        		}
+
+					        	}
+					        }
+							
+
+
+						}
+						
+						else if (model.getPlayer() == 2) {
+							/*if there is valid location to play then change to other player*/
+							checkwhite:
+						        for (int j = 0; j < model.getBoardWidth(); j++) {
+						        	for (int k = 0; k < model.getBoardHeight(); k++) {
+						        		if (model.getBoardContents(j, k) == 0) {
+							        		if(this.pieceCounter(j, k, 1, 0) != 0) {
+							        			whiteToPlay = true;
+							        			blackToPlay = false;
+							        			break checkwhite;
+							        		}
+							        		if(this.pieceCounter(j, k, 1, 0) == 0) {
+							        			whiteToPlay = false;
+							        			if(this.pieceCounter(j, k, 2, 0) == 0)
+							        				blackToPlay = false;
+							        		}
+						        		}
+						        		
+
+						        	}
+						        }
+
+
+						}
+						
+
+						
+					}
+			}
+			boolean finished = true;
+			for ( int x1 = 0 ; x1 < model.getBoardWidth() ; x1++ )
+				for ( int y1 = 0 ; y1 < model.getBoardHeight() ; y1++ )
+					if ( model.getBoardContents(x1, y1) == 0 )
+						finished = false; 
+			model.setFinished(finished);
+			/*if neither player can move then end the game	*/
+			if (whiteToPlay == false && blackToPlay == false) {
+				model.setFinished(true);
+				
+			}
+			this.update();
 		}
 		
 		
 		
+
+		
+		
+		
 				
-		view.refreshView();
+		
 	}
 
 	@Override
 	public void doAutomatedMove(int player) {
 		int maxSeen = 0, result = 0,  autox = 0,  autoy = 0;
-		for(int j = 0; j <= 7; j++ ) {
-			for(int k = 0; k <= 7; k++) {
+		for(int j = 0; j < model.getBoardWidth(); j++ ) {
+			for(int k = 0; k < model.getBoardHeight(); k++) {
 				if(model.getBoardContents(j, k) == 0) {
 					result = this.pieceCounter(j, k, player, 0);
 						if(result >= maxSeen) {
@@ -436,14 +478,15 @@ public class ReversiController implements IController {
 				}
 			}
 		}
-		this.squareSelected(player, autox, autoy);
-		view.refreshView();
-		
+		if(model.hasFinished() == false) {
+			this.squareSelected(player, autox, autoy);
+			view.refreshView();
+		}
 	}
 	
 	public int pieceCounter(int x, int y, int player, int doPaint) {
 		
-		int totalcount = 0 ;
+		int totalcount = 0, highestCount = 0 ;
 		int xoffset, yoffset, whoOwnsSquare;
 		
 		
@@ -455,15 +498,17 @@ public class ReversiController implements IController {
 					if ((whoOwnsSquare > 0) && (whoOwnsSquare != player)) {
 						
 						/* function to carry on going in offset direction*/
-						totalcount += carryOn(xoffset, yoffset, x+xoffset, y+yoffset, player, doPaint);
-						
+						totalcount = carryOn(xoffset, yoffset, x+xoffset, y+yoffset, player, doPaint);
+						if (totalcount > highestCount) {
+							highestCount = totalcount;
+						}
 					}
 
 				}
 			}
 		}
 		
-		return totalcount;
+		return highestCount;
 	}
 	
 	
@@ -485,7 +530,7 @@ public class ReversiController implements IController {
 			count++;
 			currentx = currentx + xoffset;
 			currenty = currenty + yoffset;
-			if((currentx < 0) || (currentx > 8) || (currenty < 0) || (currenty > 8)) {
+			if((currentx < 0) || (currentx >= 8) || (currenty < 0) || (currenty >= 8)) {
 				break;
 			}
 			if(model.getBoardContents(currentx, currenty) == player) {
@@ -511,10 +556,10 @@ public class ReversiController implements IController {
 				noToCapture--;
 			}
 			
-			return count;
+			return count+1;
 		}
 		else if (canPlay && doPaint == 0) {
-			return count;
+			return count+1;
 		}
 		
 
@@ -523,6 +568,4 @@ public class ReversiController implements IController {
 	}
 
 }
-
-
 ```
