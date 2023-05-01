@@ -239,11 +239,11 @@ public class squarehandler extends JButton
 
 			if(drawColor != null) {
 				g.setColor(drawColor);
-				g.drawOval(0, 0, 46, 46);
+				g.drawOval(1, 1, 46, 46);
 			}
 			if(fillColor != null) {
 				g.setColor(fillColor);
-				g.fillOval(0, 0, 46, 46);
+				g.fillOval(1, 1, 46, 46);
 			}
 
 		
