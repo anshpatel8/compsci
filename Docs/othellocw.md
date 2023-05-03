@@ -1,4 +1,4 @@
-# Page for my othello cw backup
+# Page for my Othello cw 
 
 ## GUIView
 
