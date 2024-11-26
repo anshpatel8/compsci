@@ -1,4 +1,4 @@
-# Page for my Othello cw 
+# Page for my Othello game 
 
 ## GUIView
 
