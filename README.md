@@ -12,6 +12,13 @@ Below is a portfolio for all projects I created studying Computer Science at the
  - **Programming Paradigms** - Developed a fully working version of the Othello game in Java using Model View Controller programming and Swing. Also learned the basics of Haskell and recursion and solving computation problems using Haskell
 
 ### Second year
+ - **Operating systems and Concurrency** - Learned how operating systems work and made a fully functional mock CPU in C to simulate multi threaded programming with various processes and outputs
+ - **Formal reasoning** - Lean prover tactics
+ - **Developing Maintainable Software** - Was given a badly made project in Java and had to maintain it by refactoring it and extending it in a way that adheres to common practices
+
+
+
+
  - [Random Projects](Docs/randomprojects.md)
 
  
