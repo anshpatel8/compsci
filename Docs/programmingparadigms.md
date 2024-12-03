@@ -1,4 +1,0 @@
-# Programming Paradigms
-## Java
-
-## Haskell
