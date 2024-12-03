@@ -15,6 +15,13 @@ Below is a portfolio for all projects I created studying Computer Science at the
  - **Operating systems and Concurrency** - Learned how operating systems work and made a fully functional mock CPU in C to simulate multi threaded programming with various processes and outputs
  - **Formal reasoning** - Lean prover tactics
  - **Developing Maintainable Software** - Was given a badly made project in Java and had to maintain it by refactoring it and extending it in a way that adheres to common practices
+ - **Group project** - Made an android app in react native for a rowing club that wanted their members to be able to receive updates, monitor attendance and track training performace. Data was stored in a firebase database. Did the full requirements gathering process and UML diagrams
+ - **Artifical Intelligence Methods** - Implemented a heuristic based solver to cycle through a few heuristics and solve a minimisation problem in Java
+ - **Algorithms, data structures and efficiency** - Learned about how to measure performance of algorithms and how different data structures operate
+ - **Languages and Computation** - Learned about finite automata, turing machines
+
+### Third year
+ -
 
 
 
