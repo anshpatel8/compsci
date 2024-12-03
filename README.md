@@ -25,7 +25,7 @@ Below is a portfolio for all projects I created studying Computer Science at the
 
 
 
-
+### Personal projects
  - [Random Projects](Docs/randomprojects.md)
 
  
