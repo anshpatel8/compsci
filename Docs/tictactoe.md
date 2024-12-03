@@ -1,4 +1,5 @@
 # Tic tac toe
+Made a tic tac toe game in Java using Swing
 ## Controller
 ```
 package tictac;
