@@ -21,9 +21,10 @@ Below is a portfolio for all projects I created studying Computer Science at the
  - **Languages and Computation** - Learned about finite automata, turing machines
 
 ### Third year
- -
-
-
+ - **Compilers** - Developed a fully working compiler for the MiniTriangle language in Haskell
+ - **Mobile device programming** - Made a fully fuctioning music player like Spotify using Android Studio
+ - **Communication and Collaboration Technologies** - Made a 3D interactive map of a museum that people can collaborate on to add facts about artefects using HTML and three.js
+ - **Symbolic Artificial Intelligence** - Developed a Z3 and OR-Tools based solver to solve a workflow satisfiability problem and wrote a report outlining my formulations in CSP and FOL format
 
 ### Personal projects
  - [Random Projects](Docs/randomprojects.md)
