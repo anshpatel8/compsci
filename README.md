@@ -1,5 +1,16 @@
 # Computer Science portfolio
 Below is a portfolio for all projects I created studying Computer Science at the University of Nottingham. This includes all courseworks, and any optional projects undertaken. Currently managed by Ansh Patel. Since I am not allowed to share direct code, I will instead provide written information of what I made and further information can be given upon request
+## Skills summary
+ - C
+ - Java
+ - Python
+ - Haskell
+ - HTML, CSS, PHP, three.js
+ - ARM
+ - React
+ - Photoshop
+ - Illustrator
+ - Video and photo editing
 ## List of modules
 ### First year
  - **Programming and Algorithms** - Learned the basics of programming and C, and how to implement solutions to common problems and sorting algorithms and data structures
